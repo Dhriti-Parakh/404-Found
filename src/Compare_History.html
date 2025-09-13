@@ -1,0 +1,185 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Compare Histories - Financial Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { background: #f8f9fa; }
+    h1 { font-weight: 700; }
+    .card { border-radius: 15px; }
+    .comparison-table td, .comparison-table th { text-align: center; }
+    .negative { color: red; font-weight: bold; }
+    .positive { color: green; font-weight: bold; }
+  </style>
+</head>
+<body class="bg-light">
+<div class="container py-4">
+  <h1 class="text-center mb-4">Compare Financial Histories</h1>
+
+  <!-- Upload CSV -->
+  <div class="card p-4 shadow-sm mb-4">
+    <h5 class="mb-3">Upload Bank Statements (CSV)</h5>
+    <input type="file" id="csvFile" multiple accept=".csv" class="form-control mb-3">
+    <div id="monthOptions" class="mb-3"></div>
+    <button class="btn btn-primary" id="compareBtn">Compare Selected</button>
+  </div>
+
+  <!-- Charts -->
+  <div class="row" id="chartsRow"></div>
+
+  <!-- Comparison Table -->
+  <div id="comparisonTableContainer" class="mt-4"></div>
+</div>
+
+<script>
+// Categories
+const categories = {
+  "Food": ["Cafe", "Restaurant", "Pick n Pay", "Checkers", "Supermarket"],
+  "Travel": ["Uber", "Taxi", "Flight", "Bus"],
+  "Household": ["Rent", "Power", "Eskom", "Billing", "Groceries", "Garage", "Pharma", "Airtime"],
+  "Fun": ["Cinema", "Concert", "Club", "MusicStream", "Streaming", "Party"],
+  "Other": []
+};
+
+let statements = {}; // parsed data by month
+
+// Parse CSV files
+document.getElementById("csvFile").addEventListener("change", (event) => {
+  const files = event.target.files;
+  statements = {};
+  document.getElementById("monthOptions").innerHTML = "";
+
+  Array.from(files).forEach(file => {
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: function(results) {
+        const data = results.data;
+        if (data.length > 0) {
+          let firstDate = new Date(data[0].Date.split("/").reverse().join("-"));
+          let monthKey = `${firstDate.toLocaleString('default', { month: 'long' })} ${firstDate.getFullYear()}`;
+          statements[monthKey] = data;
+
+          // Add checkbox for selection
+          let checkbox = document.createElement("div");
+          checkbox.className = "form-check";
+          checkbox.innerHTML = `
+            <input class="form-check-input" type="checkbox" value="${monthKey}" id="chk-${monthKey}">
+            <label class="form-check-label" for="chk-${monthKey}">${monthKey}</label>
+          `;
+          document.getElementById("monthOptions").appendChild(checkbox);
+        }
+      }
+    });
+  });
+});
+
+// Categorise transactions
+function categorise(transactions) {
+  let sums = { Food: 0, Travel: 0, Household: 0, Fun: 0, Other: 0 };
+  transactions.forEach(row => {
+    let amount = parseFloat(row.Amount);
+    if (isNaN(amount) || amount > 0) return; // skip income
+
+    let category = "Other";
+    for (let cat in categories) {
+      for (let keyword of categories[cat]) {
+        if (row.Description.toLowerCase().includes(keyword.toLowerCase())) {
+          category = cat;
+          break;
+        }
+      }
+    }
+    sums[category] += Math.abs(amount);
+  });
+  return sums;
+}
+
+// Draw charts + table
+document.getElementById("compareBtn").addEventListener("click", () => {
+  let selected = Array.from(document.querySelectorAll("#monthOptions input:checked"))
+    .map(chk => chk.value);
+
+  let chartsRow = document.getElementById("chartsRow");
+  chartsRow.innerHTML = "";
+  document.getElementById("comparisonTableContainer").innerHTML = "";
+
+  if (selected.length === 0) {
+    alert("Please select at least one month.");
+    return;
+  }
+
+  // Draw charts for selected months
+  selected.forEach(monthKey => {
+    let data = statements[monthKey];
+    let sums = categorise(data);
+
+    let canvasId = `chart-${monthKey}`;
+    let col = document.createElement("div");
+    col.className = "col-md-6 mb-3";
+    col.innerHTML = `
+      <div class="card p-3 shadow-sm">
+        <h6 class="text-center">Expenses for ${monthKey}</h6>
+        <canvas id="${canvasId}" height="200"></canvas>
+      </div>`;
+    chartsRow.appendChild(col);
+
+    new Chart(document.getElementById(canvasId), {
+      type: 'pie',
+      data: {
+        labels: Object.keys(sums),
+        datasets: [{
+          data: Object.values(sums),
+          backgroundColor: ['#ff6384','#36a2eb','#ffce56','#4bc0c0','#9966ff']
+        }]
+      }
+    });
+  });
+
+  // If exactly 2 selected -> show comparison table
+  if (selected.length === 2) {
+    let [firstMonth, secondMonth] = selected;
+    let sums1 = categorise(statements[firstMonth]);
+    let sums2 = categorise(statements[secondMonth]);
+
+    let tableHTML = `
+      <div class="card p-4 shadow-sm">
+        <h5 class="mb-3 text-center">Comparison: ${secondMonth} vs ${firstMonth}</h5>
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered comparison-table">
+            <thead class="table-dark">
+              <tr>
+                <th>Category</th>
+                <th>${firstMonth}</th>
+                <th>${secondMonth}</th>
+                <th>Difference</th>
+              </tr>
+            </thead>
+            <tbody>`;
+    for (let cat of Object.keys(sums1)) {
+      let val1 = sums1[cat].toFixed(2);
+      let val2 = sums2[cat].toFixed(2);
+      let diff = (sums2[cat] - sums1[cat]).toFixed(2);
+      let diffClass = diff >= 0 ? "negative" : "positive";
+      tableHTML += `
+        <tr>
+          <td>${cat}</td>
+          <td>R ${val1}</td>
+          <td>R ${val2}</td>
+          <td class="${diffClass}">${diff >= 0 ? "+R " + diff : "-R " + Math.abs(diff)}</td>
+        </tr>`;
+    }
+    tableHTML += `</tbody></table></div></div>`;
+    document.getElementById("comparisonTableContainer").innerHTML = tableHTML;
+  }
+});
+</script>
+</body>
+</html>

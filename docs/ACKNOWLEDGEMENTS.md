@@ -11,22 +11,19 @@ This document lists all **third-party repositories, modules, libraries, framewor
 ---
 
 ## 📦 Libraries, Frameworks & Submodules
-| Name                 | Link / Repo                                           | Author(s)       | Usage                  |
-|----------------------|-------------------------------------------------------|-----------------|------------------------|
-| IntricatePointers    | https://github.com/DnA-IntRicate/IntricatePointers    | Adam Foflonker  | Memory management      |
-| fast_obj             | https://github.com/thisistherk/fast_obj               | Richard Knight  | Parsing OBJ files      |
-
+None used beyond standard runtime environments.
 ---
+##🎨 Design & Content Generation Tools
+| Name          | Source                              | Usage                             |
+|---------------|-------------------------------------|-----------------------------------|
+| Canva AI         | <https://www.canva.com/>   | Generated custom graphics, icons, banners, and design elements using Canva AI tools (Canva Premium) |
+| Covalence (YouTube)        | <https://www.youtube.com/watch?v=oencyPPBTUQ>   | Referenced for guidance on parsing CSV files using JavaScript |
 
-## 🌐 APIs & Services
-| Name          | Link / Docs                        | Author(s)      | Usage                             |
-|---------------|------------------------------------|----------------|-----------------------------------|
-| OpenWeather   | https://openweathermap.org/api     | Open Weather   | Fetching weather data             |
-| Stripe        | https://stripe.com/docs/api        | Stripe         | Payment handling                  |
 
 ---
 
 ## 📊 Datasets
 | Name          | Source                              | Usage                             |
 |---------------|-------------------------------------|-----------------------------------|
-| MNIST         | http://yann.lecun.com/exdb/mnist/   | Training/testing machine learning |
+| Unsplash         | <https://unsplash.com/>   |  photos used in the Investment and Login UI screens. All images comply with Unsplash’s license (free to use, no attribution required but credited here) |
+| DeepSeek         | <https://www.deepseek.com/en>   | Generation of csv files used in testing, as well as keywords used to seperate transactions into their respsective categories|

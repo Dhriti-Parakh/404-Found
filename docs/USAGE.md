@@ -39,6 +39,6 @@ How the Gamified Tracker Works
 ```
 ## 🎥 Demo
 Check out the Demos: 
-- [Demo Video](../demo/demo_Video.zip)
+- [Demo Video](https://youtu.be/jCEEjfMZc5w)
 - [Demo Presentation](../demo/ProsPear.pptx)
 

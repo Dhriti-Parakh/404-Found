@@ -28,7 +28,7 @@ cd <404-Found>
 ## ▶️ Running the Project
 ``` bash
 1. Open `login.html` in VS Code.  
-2. Right-click and select **"Open with Live Server"**.  
+2. Right-click and select "Open with Live Server".  
 3. The site should open in your browser at: <http://127.0.0.1:5500/login.html>
 4. Log in (no credentials needed for demo).  
 5. Explore the dashboard and other pages via the links. 

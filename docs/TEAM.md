@@ -6,23 +6,22 @@
 
 ## ⚒️ Team Name
 ``` c
-// TODO: Fill-in the name of your team.
+404 Found
 ```
 
 ## 👥 Members
 | Name     | Role                | Institution           | Discord Handle | Email |
 |----------|---------------------|-----------------------| -------------------|-------------|
-| **Name 1**   | Backend Developer   | University of Cape Town | name1 | <email1@gmail.com> |
-| **Name 2**   | Frontend Developer  | University of the Witwatersrand | name2 | <email2@gmail.com> |
-| **Name 3**   | Designer            | University of Johannesburg | name3 | <email3@gmail.com> |
-| **Name 4**   | Q.A Tester          | University of the Western Cape | name4 | <email4@gmail.com> |
+| Guinelda Moukoko   | Frontend Developer   | University of Pretoria | astrangecasedoc | <u24816168@tuks.co.za> |
+| Dhriti Parakh   | Frontend Developer  | University of Pretoria | u24625389_73041 | <u24625389@tuks.co.za> |
+| Pfuluphedzani Mabidi   | Frontend and Backend Developer          | University of Pretoria | pfu_lu | <u24916481@tuks.co.za> |
+| Nishchay Naran  | Backend Developer         | University of Pretoria | 24622185 | <u24622185@tuks.co.za> |
 
 ## 🏫 Institution
 ``` c
-// TODO: Fill-in the name of the institution your
-// team is competing under.
+University of Pretoria
 ```
 
 ## 📧 Other Contact Info
-- GitHub Repo: <https://github.com/user-name/repo-name>
-- Other Info (if available): LinkedIn, Website, etc.
+- GitHub Repo: <https://github.com/Dhriti-Parakh/404-Found>
+- Other Info (if available): Pfuluphedzani Mabidi: +27 72 265 2577, Dhriti Parakh: +27 83 404 7309.

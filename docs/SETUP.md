@@ -13,23 +13,23 @@ Follow the steps below to set up and run the project. (Example)
 // TODO: List software, runtimes, frameworks, and or dependencies
 // along with instructions on how to set each up.
 ```
-- Example: Node.js v18+
-- Example: Python 3.10
-- Example: Docker
-
+- [Visual Studio Code](https://code.visualstudio.com/)  
+- [Live Server Extension] on VS Code (by Ritwick Dey)  
+- A modern browser (Chrome, Edge, Firefox, etc.)
 ---
 
 ## ⚙️ Installation
 ``` bash
 # Clone the repository
-git clone <your-repo-url>
-cd <repo-name>
-
-# Install dependencies
-<insert command here>
+git clone <https://github.com/Dhriti-Parakh/404-Found>
+cd <404-Found>
 ```
 
 ## ▶️ Running the Project
 ``` bash
-<insert run command here> # Or an explanation on what to do
+1. Open `login.html` in VS Code.  
+2. Right-click and select **"Open with Live Server"**.  
+3. The site should open in your browser at: <http://127.0.0.1:5500/login.html>
+4. Log in (no credentials needed for demo).  
+5. Explore the dashboard and other pages via the links. 
 ```

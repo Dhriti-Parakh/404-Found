@@ -9,13 +9,29 @@
 
 ## 🖥️ How to Use
 ```
-1: On the login page no credentials are required, click the "Login" button to open the landing page.
-2: From the Landing page you are promted with two options by clicking on the character you can expore the XXXX page
-3: On the XXXX page you can ...
-4: From the landing page select the XXXX button to reach the CSV Bank statement page, here you can upload one of the provided CSV files( August.csv or september.csv)
-5: Once uploaded you are presented with a break down the monthly spending
-6: Using the Compare Months button you will reach the Compare Financial Histories page, here multiple cvs banking statements can be uploaded and allow you to compare spending between the months
-7: The program can be closed with the built in exit in the brower.
+How the Gamified Tracker Works
+1.	Login Page
+    No credentials required.
+    Click Login to open the landing page.
+2.	Landing Page
+    Choose a character (Pear tree, dog, cat, fish).
+    Enter the Game Page where you can:
+    Upload your current month’s bank statement (CSV).
+    Click Calculate to see points earned.
+    Track growth progress with a progress bar.
+    Watch your character grow when a stage is completed.
+    Earn bonus points & badges by completing checkpoints.
+3.	CSV Upload Page
+    From the Landing Page, click CSV Bank Statement.
+    Upload a provided CSV file (e.g., August.csv or September.csv).
+4.	Spending Breakdown
+    After upload, view a monthly spending breakdown.
+5.	Compare Histories Page
+    Click Compare Months to upload multiple CSVs.
+    Compare spending between months.
+6.	Exit
+    Close the program with the browser’s built-in exit.
+
 ```
 ## 🎥 Demo
 Check out the Demos: 

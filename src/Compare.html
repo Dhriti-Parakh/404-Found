@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Compare Financial Histories</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --deep-forest: #0b2b18;
+      --dark-emerald: #19643d;
+      --emerald: #0d673a;
+      --vibrant-green: #4fff7b;
+      --accent-green: #4cf07d;
+      --good: #50fa7b;
+      --bad: #ff6b6b;
+      --warn: #f1fa8c;
+      --teal: #3affba;
+    }
+
+    body { 
+      font-family: 'Nunito', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji"; 
+      color: #e5e7eb; 
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: linear-gradient(-45deg, #0b2b18, #19643d, #0d673a, #3affba);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+    
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .glass {
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06);
+      backdrop-filter: blur(8px);
+      border-radius: 1.5rem;
+    }
+
+    /* Updated brand heading style to use vibrant green */
+    .brand {
+      color: var(--vibrant-green); /* Solid vibrant green */
+      background: none; /* Remove gradient */
+      -webkit-background-clip: unset; 
+      background-clip: unset;
+    }
+
+    /* Transparent button with hover effect */
+    .btn-primary {
+      background: transparent; /* Make it transparent */
+      border: 2px solid var(--vibrant-green); /* Border with vibrant green */
+      color: var(--vibrant-green); /* Text color matches border */
+      padding: 0.75rem 1.5rem; /* Adjust padding for better appearance */
+      border-radius: 0.75rem; /* Match the rounded corners */
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 0 0 rgba(79, 255, 123, 0.3); /* Subtle glow effect */
+    }
+    
+    .btn-primary:hover {
+      background: rgba(79, 255, 123, 0.1); /* Light transparent green on hover */
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(79, 255, 123, 0.35); /* Enhanced shadow on hover */
+      border-color: var(--vibrant-green);
+      color: var(--vibrant-green);
+    }
+
+    .btn-back {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #e5e7eb;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    .btn-back:hover {
+      background: rgba(255,255,255,0.15);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .card {
+      border-radius: 1.5rem !important;
+      border: none !important;
+    }
+
+    .chart-container {
+      height: 240px;
+    }
+
+    .negative {
+      color: #ff6b6b;
+      font-weight: bold;
+    }
+
+    .positive {
+      color: #50fa7b;
+      font-weight: bold;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      text-align: center;
+      padding: 0.75rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .comparison-table thead th {
+      background: rgba(255,255,255,0.03);
+      color: #d1d5db;
+      font-weight: 600;
+    }
+
+    .form-check-input {
+      accent-color: #4cc9f0;
+    }
+
+    .form-check-label {
+      color: #e5e7eb;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.03);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,255,255,0.3);
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <div class="max-w-6xl mx-auto px-6 py-12 space-y-8">
+
+    <header class="text-center">
+      <h1 class="text-4xl md:text-5xl font-extrabold brand">Compare Financial Histories</h1>
+      <p class="text-slate-300/90 mt-3">Upload multiple bank statements to compare spending across months.</p>
+      
+      <!-- BACK TO UPLOAD BUTTON -->
+      <a href="upload.html" class="btn-back mt-6">
+        ← Back to Upload
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </a>
+
+    </header>
+
+    <!-- Upload Section -->
+    <section class="glass p-6 md:p-8">
+      <h2 class="text-2xl font-bold mb-4 text-center" style="color: var(--vibrant-green);">Upload Bank Statements (CSV)</h2>
+      <input type="file" id="csvFile" multiple accept=".csv" class="block w-full file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-white/10 file:text-white file:font-semibold file:hover:bg-white/20 mb-4 bg-transparent border border-white/10 rounded-xl p-3">
+      <div id="monthOptions" class="mb-6 space-y-2"></div>
+      <button id="compareBtn" class="btn-primary text-white rounded-xl font-semibold shadow-md mx-auto block">Compare Selected</button>
+    </section>
+
+    <!-- Charts -->
+    <section id="chartsRow" class="grid md:grid-cols-2 gap-6"></section>
+
+    <!-- Comparison Table -->
+    <section id="comparisonTableContainer" class="glass p-6 md:p-8 hidden"></section>
+
+  </div>
+
+  <script>
+    // Categories matching merchant/description keywords
+    const categories = {
+      "Food": ["Cafe", "Restaurant", "Pick n Pay", "Checkers", "Supermarket", "Groceries", "Food Court", "Takeaway", "Eateries"],
+      "Travel": ["Uber", "Taxi", "Flight", "Bus", "Gautrain", "Putco", "MyCiti", "Shell", "BP", "Total", "Fuel", "Petrol", "Diesel", "Toll", "N1", "N2", "N3", "E-Toll"],
+      "Household": ["Rent", "Power", "Eskom", "Billing", "Garage", "Pharma", "Airtime", "Internet", "Water", "Rates", "Sewer", "Municipal"],
+      "Fun": ["Cinema", "Concert", "Club", "MusicStream", "Streaming", "Party", "Netflix", "Spotify", "Disney+", "Showmax", "DSTV", "PlayStation", "Xbox", "GamePass"],
+      "Other": []
+    };
+
+    let statements = {}; // parsed data by month key: "Month Year"
+
+    // Parse CSV files
+    document.getElementById("csvFile").addEventListener("change", (event) => {
+      const files = event.target.files;
+      statements = {};
+      document.getElementById("monthOptions").innerHTML = "";
+
+      Array.from(files).forEach(file => {
+        Papa.parse(file, {
+          header: true,
+          skipEmptyLines: true,
+          complete: function(results) {
+            const data = results.data;
+            if (data.length > 0) {
+              // Convert Transaction Date from YYYYMMDD to YYYY-MM-DD format
+              const processedData = data.map(row => {
+                let dateStr = row["Transaction Date"] || "";
+                // Check if it's in YYYYMMDD format (8 digits)
+                if (/^\d{8}$/.test(dateStr)) {
+                  const year = dateStr.substring(0, 4);
+                  const month = dateStr.substring(4, 6);
+                  const day = dateStr.substring(6, 8);
+                  dateStr = `${year}-${month}-${day}`;
+                }
+                return {
+                  ...row,
+                  "Transaction Date": dateStr
+                };
+              });
+
+              // Use first transaction date to determine month/year
+              let firstDate = new Date(processedData[0]["Transaction Date"]);
+              let monthKey = `${firstDate.toLocaleString('default', { month: 'long' })} ${firstDate.getFullYear()}`;
+              statements[monthKey] = processedData;
+
+              // Add checkbox for selection
+              let checkbox = document.createElement("div");
+              checkbox.className = "form-check";
+              checkbox.innerHTML = `
+                <input class="form-check-input" type="checkbox" value="${monthKey}" id="chk-${monthKey}">
+                <label class="form-check-label" for="chk-${monthKey}">${monthKey}</label>
+              `;
+              document.getElementById("monthOptions").appendChild(checkbox);
+            }
+          }
+        });
+      });
+    });
+
+    // Categorise transactions using Merchant or Description
+    function categorise(transactions) {
+      let sums = { Food: 0, Travel: 0, Household: 0, Fun: 0, Other: 0 };
+      transactions.forEach(row => {
+        // Amount is negative for expenses
+        let amount = parseFloat(row.Amount);
+        if (isNaN(amount) || amount > 0) return; // skip income
+
+        let category = "Other";
+        let desc = (row.Description || "").toLowerCase();
+        let merchant = (row.Merchant || "").toLowerCase();
+
+        for (let cat in categories) {
+          for (let keyword of categories[cat]) {
+            if (desc.includes(keyword.toLowerCase()) || merchant.includes(keyword.toLowerCase())) {
+              category = cat;
+              break;
+            }
+          }
+          if (category !== "Other") break;
+        }
+
+        sums[category] += Math.abs(amount);
+      });
+      return sums;
+    }
+
+    // Draw charts + table
+    document.getElementById("compareBtn").addEventListener("click", () => {
+      let selected = Array.from(document.querySelectorAll("#monthOptions input:checked"))
+        .map(chk => chk.value);
+
+      let chartsRow = document.getElementById("chartsRow");
+      chartsRow.innerHTML = "";
+      let tableContainer = document.getElementById("comparisonTableContainer");
+      tableContainer.innerHTML = "";
+      tableContainer.classList.add("hidden");
+
+      if (selected.length === 0) {
+        alert("Please select at least one month.");
+        return;
+      }
+
+      // Define color palette matching brand
+      const colors = [
+        "#4cc9f0", // cyan-blue
+        "#3a86ff", // blue
+        "#50fa7b", // good green
+        "#ff6b6b", // bad red
+        "#f1fa8c"  // warn yellow
+      ];
+
+      // Draw charts for selected months
+      selected.forEach(monthKey => {
+        let data = statements[monthKey];
+        let sums = categorise(data);
+
+        let canvasId = `chart-${monthKey}`;
+        let col = document.createElement("div");
+        col.className = "card glass p-4 md:p-6";
+        col.innerHTML = `
+          <h6 class="text-center text-xl font-bold mb-4" style="color: var(--vibrant-green);">${monthKey}</h6>
+          <div class="chart-container relative">
+            <canvas id="${canvasId}" height="200"></canvas>
+          </div>
+        `;
+        chartsRow.appendChild(col);
+
+        new Chart(document.getElementById(canvasId), {
+          type: 'pie',
+          data: {
+            labels: Object.keys(sums),
+            datasets: [{
+              data: Object.values(sums),
+              backgroundColor: colors,
+              borderWidth: 0,
+              borderRadius: 10
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  color: '#e5e7eb',
+                  font: {
+                    size: 12
+                  }
+                }
+              },
+              tooltip: {
+                backgroundColor: 'rgba(15,23,42,.98)',
+                borderColor: 'rgba(255,255,255,.1)',
+                borderWidth: 1,
+                titleColor: '#e5e7eb',
+                bodyColor: '#e5e7eb',
+                cornerRadius: 8
+              }
+            }
+          }
+        });
+      });
+
+      // If exactly 2 selected -> show comparison table
+      if (selected.length === 2) {
+        let [firstMonth, secondMonth] = selected;
+        let sums1 = categorise(statements[firstMonth]);
+        let sums2 = categorise(statements[secondMonth]);
+
+        let tableHTML = `
+          <div class="card glass p-6">
+            <h5 class="text-2xl font-bold text-center mb-6" style="color: var(--vibrant-green);">Comparison: ${secondMonth} vs ${firstMonth}</h5>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left comparison-table">
+                <thead>
+                  <tr>
+                    <th class="py-3">Category</th>
+                    <th class="py-3">${firstMonth}</th>
+                    <th class="py-3">${secondMonth}</th>
+                    <th class="py-3">Difference</th>
+                  </tr>
+                </thead>
+                <tbody>`;
+        for (let cat of Object.keys(sums1)) {
+          let val1 = sums1[cat].toFixed(2);
+          let val2 = sums2[cat].toFixed(2);
+          let diff = (sums2[cat] - sums1[cat]).toFixed(2);
+          let diffClass = diff >= 0 ? "negative" : "positive";
+          tableHTML += `
+            <tr>
+              <td class="py-3 font-medium">${cat}</td>
+              <td class="py-3">R ${val1}</td>
+              <td class="py-3">R ${val2}</td>
+              <td class="py-3 ${diffClass}">${diff >= 0 ? "+R " + diff : "-R " + Math.abs(diff)}</td>
+            </tr>`;
+        }
+        tableHTML += `</tbody></table></div></div>`;
+        tableContainer.innerHTML = tableHTML;
+        tableContainer.classList.remove("hidden");
+      }
+    });
+  </script>
+</body>
+</html>

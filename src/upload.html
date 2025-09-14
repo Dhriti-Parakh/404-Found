@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CSV Bank Statement Preview — Categorized</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --deep-forest: #0b2b18;
+      --dark-emerald: #19643d;
+      --emerald: #0d673a;
+      --vibrant-green: #4fff7b;
+      --accent-green: #4cf07d;
+      --good: #50fa7b;
+      --bad: #ff6b6b;
+      --warn: #f1fa8c;
+      --lime: #bbf63b;
+      --teal: #3affba;
+      
+      /* Updated theme colors based on your new palette */
+      --bg: #0b132b;
+      --panel: #0f1c2e;
+      --grad1: var(--dark-emerald);
+      --grad2: var(--teal);
+      --accent: var(--vibrant-green);
+    }
+    
+    /* Updated body styles as requested */
+    body { 
+      font-family: 'Nunito', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji"; 
+      color: #e5e7eb; 
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: linear-gradient(-45deg, #0b2b18, #19643d, #0d673a, #3affba);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      /*center*/
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+    
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .glass {
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06);
+      backdrop-filter: blur(8px);
+      padding: 2rem;
+      border-radius: 1.5rem;
+      width: 100%;
+      max-width: 900px;
+    }
+    
+    /* Updated brand class to use the vibrant green from your palette */
+    .brand {
+      color: var(--vibrant-green); /* Solid vibrant green instead of gradient */
+      background: none; /* Remove gradient */
+      -webkit-background-clip: unset; 
+      background-clip: unset;
+    }
+    
+    .btn-ghost {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+    }
+    .pill {
+      background: linear-gradient(90deg, rgba(76,201,240,.14), rgba(58,134,255,.14));
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    th, td {
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+    }
+    th {
+      color: #d1d5db;
+      font-weight: 600;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    td {
+      color: #e5e7eb;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    tbody tr:hover {
+      background-color: rgba(255,255,255,0.03);
+    }
+
+    /* SCROLLABLE TABLE CONTAINER */
+    .scrollable-table {
+      max-height: 24rem; /* ~96px per row x ~10 rows = comfortable view */
+      overflow-y: auto;
+      overflow-x: auto;
+      border-radius: 0.5rem;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.02);
+      margin-top: 0.5rem;
+    }
+
+    /* Custom scrollbar (optional, improves UX) */
+    .scrollable-table::-webkit-scrollbar {
+      width: 8px;
+    }
+    .scrollable-table::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+    }
+    .scrollable-table::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
+    }
+    .scrollable-table::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .category-section {
+      margin-top: 2rem;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .category-header {
+      font-size: 1.25rem;
+      font-weight: bold;
+      margin-bottom: 0.75rem;
+      color: #e5e7eb;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .category-header span {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .cat-grocery { background: #10b981; }
+    .cat-fastfood { background: #f59e0b; }
+    .cat-subscription { background: #8b5cf6; }
+    .cat-travel { background: #3b82f6; }
+    .cat-banking { background: #ef4444; }
+    .cat-entertainment { background: #ec4899; }
+    .cat-other { background: #6b7280; }
+    
+    /* Back button style */
+    .btn-back {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #e5e7eb;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.2s ease;
+      margin-top: 1rem;
+    }
+    .btn-back:hover {
+      background: rgba(255,255,255,0.15);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <div class="glass text-center">
+    <h1 class="text-3xl md:text-4xl font-extrabold brand mb-2">CSV Bank Statement</h1>
+    <p class="text-slate-300/90 mb-6">Upload your bank statement to view transactions grouped by category.</p>
+
+    <!-- CSV Upload -->
+    <div class="space-y-4 mb-8">
+      <label class="block text-sm text-slate-300">Upload CSV bank statement</label>
+      <div class="flex items-center gap-3 justify-center">
+        <input id="csvFile" type="file" accept=".csv" class="file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-white/10 file:text-white file:font-semibold file:hover:bg-white/20 btn-ghost rounded-xl px-3 py-2">
+        <button id="loadSample" class="btn-ghost rounded-xl px-4 py-2 font-semibold">Load Sample</button>
+      </div>
+      <p class="text-xs text-slate-400 max-w-md mx-auto"></p>
+    </div>
+
+    <!-- CSV Preview Table — Now Scrollable -->
+    <div class="mt-6">
+      <div class="flex items-start justify-between mb-3">
+        <h2 class="text-xl font-extrabold">All Transactions</h2>
+        <a href="compare.html" class="btn-ghost rounded-full px-5 py-2 text-sm font-semibold flex items-center gap-2 hover:bg-white/10 transition-all duration-200">
+      Compare Months
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+    </a>
+        <span class="text-xs text-slate-400"></span>
+      </div>
+      <div class="scrollable-table">
+        <table class="text-left text-sm">
+          <thead class="text-slate-300">
+            <tr>
+              <th class="py-2 pr-4">Transaction Date</th>
+              <th class="py-2 pr-4">Description</th>
+              <th class="py-2 pr-4">Amount</th>
+              <th class="py-2 pr-4">Merchant</th>
+              <th class="py-2 pr-4">Card Number (Masked)</th>
+            </tr>
+          </thead>
+          <tbody id="csvPreview" class="divide-y divide-white/10">
+            <!-- Filled by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Feedback -->
+    <div class="mt-6 text-sm text-slate-300" id="feedback"></div>
+
+    <!-- CATEGORIZED TABLES -->
+    <div id="categoryTables" class="mt-10 space-y-6">
+      <!-- Will be populated by JS -->
+    </div>
+
+    <!-- Back Button -->
+    <a href="gamified.html" class="btn-back mt-8">
+      ← Back to Home
+    </a>
+
+  </div>
+
+  <script>
+    // === CATEGORY KEYWORDS ===
+    const GROCERIES_places = [
+      "WOOLWORTHS", "CHECKERS", "SHOPRITE", "PNP", "PICKNPAY", "SPAR",
+      "FOOD LOVER'S", "FRUIT & VEG", "GREENGROCER", "BUTCHER", "BAKERY",
+      "PEP STORES", "ACKERMANS", "GAME", "MAKRO", "CASH & CARRY", "SUPERSPAR",
+      "KWIKSPAR", "TOPS AT SPAR", "CLICKS"
+    ];
+
+    const FAST_FOOD_places = [
+      "CAFE", "CAFÉ", "RESTAURANT", "TAKEAWAY", "EATERY", "FOOD COURT",
+      "STEERS", "MCDONALD'S", "KFC", "NANDO'S", "DEBONAIRS", "ROMAN'S",
+      "OCEAN BASKET", "CRUMB'S", "MUGG&BEAN", "TIMMY'S", "SEATTLE", "STARBUCKS",
+      "HALOACOFFEE", "TUKS RES FOOD", "STEERSTUKS", "BOOKMARK",
+      "UBER EATS", "MR D", "ORDERIN", "BOLT FOOD", "JUST EAT", "FOOD DELIVERY",
+      "PIZZA", "BURGER", "CHICKEN", "FISH & CHIPS", "SUSHI", "THAI", "CHINESE",
+      "INDIAN", "MEXICAN", "ITALIAN", "GREEK", "PORTUGUESE", "BRAZILIAN"
+    ];
+
+    const subscriptions = [
+      "APPL MUSIC", "APPLE MUSIC", "SPOTIFY", "NETFLIX", "NEXTFLIX", "DISNEY+",
+      "DISNEY PLUS", "SHOWMAX", "DSTV", "CANVA", "MICROSOFT", "OFFICE 365",
+      "YOUTUBE PREMIUM", "YOUTUBE RED", "AMAZON PRIME", "PLAYSTATION PLUS",
+      "XBOX LIVE", "XBOX GAMEPASS", "PLAYSTATION NOW", "AUDIBLE", "KINDLE",
+      "ADOBE", "CREATIVE CLOUD", "DROPBOX", "GOOGLE DRIVE", "ONEDRIVE",
+      "SLING", "HULU", "HBOMAX", "APPLE TV+", "APPLE TV PLUS"
+    ];
+
+    const travel = [
+      "UBER", "UBER TRIP", "BOLT", "TAXI", "GAUTRAIN", "PUTCO", "MYCITI",
+      "SHELL", "BP", "ASTRON", "TOTAL", "ENGEN", "CALTEX", "TEXACO",
+      "SASOL", "PETROLANE", "PUMA", "ZAPPER", "SNOWBALL", "FUEL", "PETROL",
+      "DIESEL", "TOLL", "N1", "N2", "N3", "N4", "N12", "GFIP", "E-TOLL"
+    ];
+
+    const banking_fees = [
+      "FEE", "BANK CHARGES", "SERVICE FEE", "MONTHLY FEE", "TRANSACTION FEE",
+      "ATM FEE", "CARD FEE", "ACCOUNT FEE", "INTEREST CHARGE", "OVERDRAFT",
+      "ADMIN FEE", "BANKING FEE", "FNB", "STANDARD BANK", "NEDBANK", "ABSA",
+      "CAPITEC", "INVESTEC", "BANK"
+    ];
+
+    const entertainment = [
+      "STER-KINEKOR", "NU METRO", "CINEMA", "MOVIES", "CONCERT", "SHOW",
+      "THEATRE", "CASINO", "SUN CITY", "MONTE CASINO", "GOLD REEF",
+      "TWO OCEANS", "AQUARIUM", "ZOO", "LION PARK", "ADVENTURE", "ENTERTAINMENT"
+    ];
+
+    // === CATEGORY MAPPING ===
+    const categories = [
+      {
+        name: "Groceries",
+        keywords: GROCERIES_places,
+        icon: "🛒",
+        color: "cat-grocery"
+      },
+      {
+        name: "Fast Food",
+        keywords: FAST_FOOD_places,
+        icon: "🍔",
+        color: "cat-fastfood"
+      },
+      {
+        name: "Subscriptions",
+        keywords: subscriptions,
+        icon: "🎵",
+        color: "cat-subscription"
+      },
+      {
+        name: "Travel & Transport",
+        keywords: travel,
+        icon: "🚗",
+        color: "cat-travel"
+      },
+      {
+        name: "Banking Fees",
+        keywords: banking_fees,
+        icon: "🏦",
+        color: "cat-banking"
+      },
+      {
+        name: "Entertainment",
+        keywords: entertainment,
+        icon: "🎬",
+        color: "cat-entertainment"
+      }
+    ];
+
+    // === STATE ===
+    const state = {
+      transactions: [],
+    };
+
+    // === ELEMENTS ===
+    const csvPreview = document.getElementById('csvPreview');
+    const categoryTables = document.getElementById('categoryTables');
+    const fileInput = document.getElementById('csvFile');
+    const loadSampleBtn = document.getElementById('loadSample');
+    const feedbackEl = document.getElementById('feedback');
+
+    // === HELPERS ===
+    const currency = (n) => n.toLocaleString(undefined, { style: 'currency', currency: 'USD' });
+
+    function parseCSV(text) {
+      const lines = text.split(/\r?\n/).filter(l => l.trim().length);
+      const header = lines[0].split(',').map(h => h.trim().toLowerCase());
+      const idx = {
+        date: header.indexOf('transaction date'),
+        desc: header.indexOf('description'),
+        amt: header.indexOf('amount'),
+        merchant: header.indexOf('merchant'),
+        card: header.indexOf('card number (masked)')
+      };
+      
+      if (Object.values([idx.date, idx.desc, idx.amt]).some(i => i === -1)) {
+        throw new Error('CSV must have headers: Transaction Date, Description, Amount');
+      }
+
+      const rows = [];
+      for (let i = 1; i < lines.length; i++) {
+        const raw = smartSplit(lines[i]);
+        if (!raw.length) continue;
+
+        const amountStr = String(raw[idx.amt] || '').replace(/[^0-9.-]/g, '');
+        const amount = parseFloat(amountStr);
+
+        const date = String(raw[idx.date] || '').trim();
+        const desc = String(raw[idx.desc] || '').trim();
+        const merchant = String(raw[idx.merchant] || '').trim();
+        const card = String(raw[idx.card] || '').trim();
+
+        if (isNaN(amount)) continue;
+
+        // Determine category based on Description OR Merchant (case-insensitive)
+        const category = findCategory(desc.toUpperCase() + ' ' + merchant.toUpperCase());
+
+        rows.push({
+          date,
+          desc,
+          merchant,
+          amount,
+          card,
+          category
+        });
+      }
+      return rows;
+    }
+
+    function findCategory(text) {
+      for (let cat of categories) {
+        for (let keyword of cat.keywords) {
+          if (text.includes(keyword.toUpperCase())) {
+            return cat.name;
+          }
+        }
+      }
+      return "Other";
+    }
+
+    function smartSplit(line){
+      const out = [];
+      let cur = '', q = false;
+      for(let i=0;i<line.length;i++){
+        const ch = line[i];
+        if(ch === '"'){ q = !q; continue; }
+        if(ch === ',' && !q){ out.push(cur); cur=''; continue; }
+        cur += ch;
+      }
+      if(cur !== '') out.push(cur);
+      return out.map(s=>s.trim());
+    }
+
+    function renderCSVPreview(rows){
+      csvPreview.innerHTML = '';
+      rows.forEach(r=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="py-2 pr-4 text-slate-200">${escapeHtml(r.date || '')}</td>
+          <td class="py-2 pr-4 text-slate-300">${escapeHtml(r.desc || '')}</td>
+          <td class="py-2 pr-4">${currency(r.amount || 0)}</td>
+          <td class="py-2 pr-4">${escapeHtml(r.merchant || '')}</td>
+          <td class="py-2 pr-4">${escapeHtml(r.card || '')}</td>
+        `;
+        csvPreview.appendChild(tr);
+      });
+    }
+
+    function renderCategoryTables(rows) {
+      categoryTables.innerHTML = '';
+
+      // Group rows by category
+      const groups = {};
+      categories.forEach(cat => groups[cat.name] = []);
+      groups["Other"] = [];
+
+      rows.forEach(row => {
+        if (groups[row.category]) {
+          groups[row.category].push(row);
+        } else {
+          groups["Other"].push(row);
+        }
+      });
+
+      // Render each group as a table
+      categories.forEach(cat => {
+        const catRows = groups[cat.name];
+        if (catRows.length === 0) return;
+
+        const section = document.createElement('div');
+        section.className = 'category-section';
+
+        const header = document.createElement('h3');
+        header.className = 'category-header';
+        header.innerHTML = `<span class="${cat.color}"></span>${cat.icon} ${cat.name} (${catRows.length})`;
+
+        const table = document.createElement('table');
+        table.className = 'text-left text-sm w-full';
+        table.innerHTML = `
+          <thead class="text-slate-300">
+            <tr>
+              <th class="py-2 pr-4">Date</th>
+              <th class="py-2 pr-4">Description</th>
+              <th class="py-2 pr-4">Amount</th>
+              <th class="py-2 pr-4">Merchant</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/10">
+          </tbody>
+        `;
+        const tbody = table.querySelector('tbody');
+
+        catRows.forEach(r => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="py-2 pr-4 text-slate-200">${escapeHtml(r.date || '')}</td>
+            <td class="py-2 pr-4 text-slate-300">${escapeHtml(r.desc || '')}</td>
+            <td class="py-2 pr-4">${currency(r.amount || 0)}</td>
+            <td class="py-2 pr-4">${escapeHtml(r.merchant || '')}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        section.appendChild(header);
+        section.appendChild(table);
+        categoryTables.appendChild(section);
+      });
+
+      // Show "Other" if any
+      const otherRows = groups["Other"];
+      if (otherRows.length > 0) {
+        const section = document.createElement('div');
+        section.className = 'category-section';
+
+        const header = document.createElement('h3');
+        header.className = 'category-header';
+        header.innerHTML = `<span class="cat-other"></span>💰 Other (${otherRows.length})`;
+
+        const table = document.createElement('table');
+        table.className = 'text-left text-sm w-full';
+        table.innerHTML = `
+          <thead class="text-slate-300">
+            <tr>
+              <th class="py-2 pr-4">Date</th>
+              <th class="py-2 pr-4">Description</th>
+              <th class="py-2 pr-4">Amount</th>
+              <th class="py-2 pr-4">Merchant</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/10">
+          </tbody>
+        `;
+        const tbody = table.querySelector('tbody');
+
+        otherRows.forEach(r => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="py-2 pr-4 text-slate-200">${escapeHtml(r.date || '')}</td>
+            <td class="py-2 pr-4 text-slate-300">${escapeHtml(r.desc || '')}</td>
+            <td class="py-2 pr-4">${currency(r.amount || 0)}</td>
+            <td class="py-2 pr-4">${escapeHtml(r.merchant || '')}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        section.appendChild(header);
+        section.appendChild(table);
+        categoryTables.appendChild(section);
+      }
+    }
+
+    function escapeHtml(s){ 
+      return String(s).replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'<','>':'>','"':'&quot;',"'":'&#39;' }[m])); 
+    }
+
+    // === EVENTS ===
+    loadSampleBtn.addEventListener('click', ()=>{
+      const sample = `Transaction Date,Description,Amount,Merchant,Card Number (Masked)
+2025-01-02,"Woolworths Grocery",125.50,Woolworths,****-1234
+2025-01-03,"McDonald's Meal",45.00,MCDONALD'S,****-5678
+2025-01-04,"Spotify Subscription",12.99,SPOTIFY,****-9012
+2025-01-05,"Uber Ride to Work",22.75,UBER,****-3456
+2025-01-06,"FNB ATM Fee",15.00,FNB,****-7890
+2025-01-07,"Netflix Monthly",15.99,NETFLIX,****-2345
+2025-01-08,"Ster-Kinekor Tickets",95.00,STER-KINEKOR,****-6789
+2025-01-09,"Shell Petrol",185.00,SHELL,****-0123
+2025-01-10,"Clicks Pharmacy",78.40,CLICKS,****-4567
+2025-01-11,"Takeaway Pizza",65.00,PIZZA HUT,****-8901
+2025-01-12,"Amazon Purchase",299.99,AMAZON,****-1111
+2025-01-13,"Starbucks Coffee",8.50,STARBUCKS,****-2222
+2025-01-14,"Gas Station",120.00,SHELL,****-3333
+2025-01-15,"YouTube Premium",11.99,YOUTUBE PREMIUM,****-4444
+2025-01-16,"Grocery Store",210.75,CHECKERS,****-5555
+2025-01-17,"Restaurant Dinner",89.50,RESTAURANT,****-6666
+2025-01-18,"Bus Fare",12.00,PUTCO,****-7777
+2025-01-19,"Netflix Subscription",15.99,NETFLIX,****-8888
+2025-01-20,"Online Shopping",345.00,AMAZON,****-9999`;
+      state.transactions = parseCSV(sample);
+      renderCSVPreview(state.transactions);
+      renderCategoryTables(state.transactions);
+      feedbackEl.textContent = 'Loaded sample CSV!';
+    });
+
+    fileInput.addEventListener('change', (e)=>{
+      const file = e.target.files?.[0];
+      if(!file){ return; }
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const text = String(reader.result || '');
+          state.transactions = parseCSV(text);
+          renderCSVPreview(state.transactions);
+          renderCategoryTables(state.transactions);
+          feedbackEl.textContent = 'CSV loaded and categorized.';
+        } catch(err){
+          feedbackEl.textContent = err.message || 'Failed to parse CSV.';
+        }
+      };
+      reader.readAsText(file);
+    });
+  </script>
+</body>
+</html>

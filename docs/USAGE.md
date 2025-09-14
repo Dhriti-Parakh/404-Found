@@ -4,8 +4,15 @@
 
 ## ▶️ Running the Application
 ``` c
-// TODO: Explain how to launch the project.
-// Add commands or steps here.
+1: Lunch Virtual Studios Code.
+2: Launch loginPage.html using the Live server extension in Virtual Studios Code.
+3: On the login page no credentials are required, click the "Login" button to open the landing page.
+4: From the Landing page you are promted with two options by clicking on the character you can expore the XXXX page
+5: On the XXXX page you can ...
+6: From the landing page select the XXXX button to reach the CSV Bank statement page, here you can upload one of the provided CSV files( August.csv or september.csv)
+7: Once uploaded you are presented with a break down the monthly spending
+8: Using the Compare Months button you will reach the Compare Financial Histories page, here multiple cvs banking statements can be uploaded and allow you to compare spending between the months
+9: The program can be closed with the built in exit in the brower.
 ```
 ``` bash
 # Example

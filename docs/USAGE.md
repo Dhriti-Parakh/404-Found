@@ -7,9 +7,10 @@
 ```
 
 ##Tips
+```
 1.When doing the initial csv upload, use the csv with the "initial_upload_statement_XXXX.csv" where XXX is the month.
 2.After the initial csv upload, when comparing expenditure and after clicking on the landing page, use the ones with the "game_bank_statement_XXX.csv" format.
-
+```
 ## 🖥️ How to Use
 ```
 How the Gamified Tracker Works

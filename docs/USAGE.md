@@ -1,5 +1,3 @@
-> *This document serves as a template for you to write **usage** instructions for your project.* 
-
 # Usage Guide
 
 ## ▶️ Running the Application
@@ -20,15 +18,7 @@
 7: The program can be closed with the built in exit in the brower.
 ```
 ## 🎥 Demo
-``` c
-// TODO: Link your demo video and PowerPoint here
-```
 Check out the Demos: 
 - [Demo Video](../demo/demo.mp4)
 - [Demo Presentation](../demo/demo.pptx)
 
-## 📌 Notes
-``` c
-// TODO: Add any special instructions, caveats, or tips
-// for using your project.
-```

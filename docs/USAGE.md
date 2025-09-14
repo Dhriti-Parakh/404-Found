@@ -10,8 +10,6 @@
 
 
 ## 🖥️ How to Use
-``` c
-// TODO: Provide step-by-step usage instructions for judges/users.
 ```
 1: On the login page no credentials are required, click the "Login" button to open the landing page.
 2: From the Landing page you are promted with two options by clicking on the character you can expore the XXXX page
@@ -20,7 +18,7 @@
 5: Once uploaded you are presented with a break down the monthly spending
 6: Using the Compare Months button you will reach the Compare Financial Histories page, here multiple cvs banking statements can be uploaded and allow you to compare spending between the months
 7: The program can be closed with the built in exit in the brower.
-
+```
 ## 🎥 Demo
 ``` c
 // TODO: Link your demo video and PowerPoint here

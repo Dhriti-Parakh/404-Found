@@ -1,0 +1,26 @@
+Date,Description,Type,Amount,Category,Balance
+01/08/2025,Employer Salary,Credit,15000,Salary,25000
+02/08/2025,Checkers Supermarket,Debit,450,Groceries,24550
+03/08/2025,Cafe Latte,Debit,35,Coffee,24515
+05/08/2025,Monthly Rent,Debit,8000,Rent,16515
+06/08/2025,City Power Billing,Debit,1200,Utilities,15315
+07/08/2025,Uber Trip,Debit,150,Transport,15165
+08/08/2025,MusicStream Subscription,Debit,79.99,Subscription,15085.01
+10/08/2025,Online Shop - Clothes,Debit,1299.9,Shopping,13785.11
+12/08/2025,ATM Withdrawal,Debit,500,ATM,13285.11
+13/08/2025,Online Shop Refund,Credit,1299.9,Refund,14585.01
+14/08/2025,The Nook Restaurant,Debit,320,Dining,14265.01
+15/08/2025,Transfer to Savings,Debit,2000,Transfer,12265.01
+16/08/2025,Interest Paid,Credit,23.45,Interest,12288.46
+17/08/2025,PharmaPlus,Debit,210.75,Pharmacy,12077.71
+18/08/2025,Eskom Prepaid,Debit,650.5,Electricity,11427.21
+19/08/2025,Cinema World,Debit,95,Entertainment,11332.21
+20/08/2025,Airtime Top-up,Debit,150,Airtime,11182.21
+21/08/2025,Charity Donation,Debit,100,Donation,11082.21
+22/08/2025,Pick n Pay,Debit,780.6,Groceries,10301.61
+23/08/2025,Fitness Club,Debit,350,Fitness,9951.61
+24/08/2025,Cashback Reward,Credit,25.5,Cashback,9977.11
+25/08/2025,Auto Garage,Debit,2200,Auto Repair,7777.11
+26/08/2025,Freelance Payment,Credit,3000,Freelance,10777.11
+27/08/2025,Streaming Service,Debit,99.99,Entertainment,10677.12
+28/08/2025,Transfer from Friend,Credit,250,Transfer,10927.12
